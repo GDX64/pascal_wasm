@@ -1,0 +1,1 @@
+ppcrosswasm32 -Tembedded -oapp.wasm app.pas
