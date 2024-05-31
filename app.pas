@@ -12,8 +12,9 @@ type TCandle = record
 end;
 
 const SIZE = 3;
-//creates an array of size SIZE
+const WIDTH = 20;
 var candles: array[0..SIZE] of TCandle;
+
 function addCandle(min: double; max: double; open: double; close: double; i: integer): integer;
 var candle: TCandle;
 begin
@@ -22,20 +23,18 @@ begin
   candle.open := open;
   candle.close := close;
   candles[i] := candle;
+
+  addCandle := SIZE;
 end;
 
-const WIDTH = 20;
 procedure draw();
 var candle: TCandle;
 var height: double;
 var i: integer;
 var x: double;
 begin
-  if length(candles) = 0 then
-    exit;
-
   clearCanvas();
-  
+
   for i := 0 to SIZE -1 do
   begin
     candle := candles[i];
@@ -56,13 +55,7 @@ begin
   end;
 end;
 
-function sum(a, b: integer): integer;
-begin
-  sum := a + b;
-end;
-
 exports
-  sum name 'sum',
   draw name 'draw',
   addCandle name 'addCandle';
 end.
