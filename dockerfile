@@ -1,17 +1,12 @@
-# Use a lightweight Node.js runtime for the final image
-FROM node:20-alpine as runner
+FROM brendanburns/wasm-dev-base:0.0.6
 
-# Set the working directory in the container to /app
-WORKDIR /app
+RUN apt update && \
+  apt install -y -qq fpc && \
+  git clone https://gitlab.com/freepascal.org/fpc/source.git fpc && \
+  cd fpc && \
+  make clean all OS_TARGET=embedded CPU_TARGET=wasm32 BINUTILSPREFIX= OPT="-O-" PP=fpc && \
+  make crossinstall OS_TARGET=embedded CPU_TARGET=wasm32 INSTALL_PREFIX=$HOME/fpcwasm
 
-# Copy the rest of the application code to the working directory
-COPY . .
+RUN echo '-Fu/root/fpcwasm/lib/fpc/$fpcversion/units/$fpctarget/*\n-Fu/root/fpcwasm/lib/fpc/$fpcversion/units/$fpctarget/rtl\n' >> /root/.fpc.cfg
 
-
-# Install a server to serve the application
-RUN npm install -g serve
-
-EXPOSE 4000
-
-# Start the server
-CMD ["serve"]
+RUN ln -s /root/fpcwasm/lib/fpc/3.3.1/ppcrosswasm32 /usr/bin/fpcwasm
