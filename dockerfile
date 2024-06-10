@@ -1,9 +1,14 @@
-FROM brendanburns/wasm-dev-base:0.0.6
+FROM ubuntu:24.10
 
 RUN apt update && \
   apt install -y -qq fpc && \
-  git clone https://gitlab.com/freepascal.org/fpc/source.git fpc && \
-  cd fpc && \
+  git clone https://gitlab.com/freepascal.org/fpc/source.git --depth=1 fpc
+
+RUN sudo apt install lld-12 && \
+  ln -sf /usr/lib/llvm-12/bin/wasm-ld ~/bin/wasm32-wasi-wasm-ld && \
+  ln -sf /usr/lib/llvm-12/bin/wasm-ld ~/bin/wasm32-embedded-wasm-ld
+
+RUN cd fpc && \
   make clean all OS_TARGET=embedded CPU_TARGET=wasm32 BINUTILSPREFIX= OPT="-O-" PP=fpc && \
   make crossinstall OS_TARGET=embedded CPU_TARGET=wasm32 INSTALL_PREFIX=$HOME/fpcwasm
 
